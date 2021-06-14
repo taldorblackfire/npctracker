@@ -1,0 +1,11 @@
+﻿@using HtmlHelpers.BeginCollectionItemCore
+@model Npcimbued
+
+@using (Html.BeginCollectionItem("ImbuedList"))
+{
+    <div id="imbuedRow" class="form-group">
+        <div class="col-md-12" style="text-align: center;">
+            <a href="https://dbeditor.azurewebsites.net/Imbued/Details/@Model.ImbuedId">@Model.Imbued.Name</a>
+        </div>
+    </div>
+}

@@ -1,0 +1,21 @@
+﻿@model MageNPCTracker.Models.Npcgame
+
+@{
+    ViewData["Title"] = "Mage Game Details";
+}
+
+<hr/>
+<div class="row form-horizontal">
+    <div class="col-md-6">
+        <div class="form-group">
+            <label class="control-label col-md-4" style="text-align: right; display: inline-block;">Name</label>
+            <div class="col-md-2" style="display: inline-block;">
+                <input asp-for="Name" class="form-control" disabled />
+            </div>
+        </div>
+     </div>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

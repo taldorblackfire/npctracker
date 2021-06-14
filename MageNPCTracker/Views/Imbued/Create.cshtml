@@ -1,0 +1,107 @@
+﻿@model MageNPCTracker.Models.ImbuedViewModel
+
+@{
+    ViewData["Title"] = "Create New Imbued Item";
+}
+<form asp-action="Create">
+    <div class="row form-horizonal">
+        <div class="col-md-6">
+            <h4 style="text-align: center;">Imbued Item Information</h4>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="ImbuedInfo.BatteryDots" />
+            <div class="form-group">
+                <label asp-for="ImbuedInfo.Name" class="control-label col-md-4" style="display: inline-block; text-align: right;"></label>
+                <div class="col-md-7" style="display: inline-block;">
+                    <input asp-for="ImbuedInfo.Name" class="form-control" />
+                    <span asp-validation-for="ImbuedInfo.Name" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="ImbuedInfo.Description" class="form-control-label col-md-4 text-right"></label>
+                <div class="col-md-7" style="display: inline-block;">
+                    <textarea asp-for="ImbuedInfo.Description" rows="6" class="form-control"></textarea>
+                    <span asp-validation-for="ImbuedInfo.Description" class="text-danger"></span>
+                </div>
+            </div>
+            <h4 style="text-align: center;">Spells</h4>
+            <div class="form-group" id="spellInfo">
+                @foreach (var item in Model.Spells ?? new List<ImbuedItemSpell>())
+                {
+                    await Html.RenderPartialAsync("_ItemSpell", item);
+                }
+            </div>
+            <p style="margin-left: 50%;">
+                <input type="button" id="addSpell" name="addSpell" value="Add Spell" />
+            </p>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </div>
+        <div class="col-md-6">
+            <h4 style="text-align: center;">Item Enhancements</h4>
+            <div class="form-group" id="itemEnhancementInfo">
+                @foreach (var item in Model.ItemEnhancement ?? new List<ItemEnhancement>())
+                {
+                    await Html.RenderPartialAsync("_ItemEnhancement", item);
+                }
+            </div>
+
+            <p style="margin-left: 50%;">
+                <input type="button" id="addItemEnhancement" name="addItemEnhancement" value="Add Item Enhancement" />
+            </p>
+        </div>
+    </div>
+</form>
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script type="text/javascript">
+        $(document).on("click", ".deleteRow", function () {
+            $(this).parents("#enhancementRow:first").remove();
+            return false;
+        });
+
+        $(document).on("click", ".deleteRow", function () {
+            $(this).parents("#itemSpellRow:first").remove();
+            return false;
+        });
+
+        $(document).on("change", ".enhancementSelect", function () {
+            var value = $(this).find("option:selected").text();
+            if (value.indexOf("Yantra") <= 0) {
+                var spellDropdown = $(this).parents('#enhancementRow:first').find('.spellSelect');
+                spellDropdown.val(0);
+            }
+            return false;
+        });
+
+        $(document).on("change", ".spellSelect", function () {
+            $(".enhancementSelect:first").val(0);
+            return false;
+        });
+
+        $("#addSpell").on('click', function () {
+            $.ajax({
+                async: false,
+                url: '/Imbued/AddSpell',
+                success: function (partialView) {
+                    $('#spellInfo').append(partialView);
+                }
+            });
+        });
+
+        $("#addItemEnhancement").on('click', function () {
+            $.ajax({
+                async: false,
+                url: '/Imbued/AddItemEnhancement',
+                success: function (partialView) {
+                    $('#itemEnhancementInfo').append(partialView);
+                }
+            });
+        });
+    </script>
+}
+

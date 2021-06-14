@@ -1,0 +1,63 @@
+﻿@model MageNPCTracker.Models.ImbuedViewModel
+
+@{
+    ViewData["Title"] = "Imbued Item Details";
+}
+
+<div class="row form-horizonal">
+    <div class="col-md-6">
+        <h4 style="text-align: center;">@Model.ImbuedInfo.Name</h4>
+        <div class="form-group">
+            <label asp-for="ImbuedInfo.SpellLevel" class="control-label col-md-4" style="display: inline-block; text-align: right;"></label>
+            <div class="col-md-7" style="display: inline-block;">
+                <input asp-for="ImbuedInfo.SpellLevel" class="form-control" disabled />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="ImbuedInfo.BatteryDots" class="control-label col-md-4" style="display: inline-block; text-align: right;"></label>
+            <div class="col-md-7" style="display: inline-block;">
+                <input asp-for="ImbuedInfo.BatteryDots" class="form-control" disabled />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="ImbuedInfo.Mana" class="control-label col-md-4" style="display: inline-block; text-align: right;"></label>
+            <div class="col-md-7" style="display: inline-block;">
+                <input asp-for="ImbuedInfo.Mana" class="form-control" disabled />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="ImbuedInfo.Cost" class="control-label col-md-4" style="display: inline-block; text-align: right;"></label>
+            <div class="col-md-7" style="display: inline-block;">
+                <input asp-for="ImbuedInfo.Cost" class="form-control" disabled />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="ImbuedInfo.Description" class="form-control-label col-md-4 text-right"></label>
+            <div class="col-md-7" style="display: inline-block;">
+                <textarea asp-for="ImbuedInfo.Description" rows="6" class="form-control" disabled></textarea>
+            </div>
+        </div>
+        <h4 style="text-align: center;">Spells</h4>
+        <div class="form-group" id="spellInfo">
+            @foreach (var item in Model.Spells ?? new List<ImbuedItemSpell>())
+            {
+                await Html.RenderPartialAsync("_ItemSpellDetails", item);
+            }
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <h4 style="text-align: center;">Item Enhancements</h4>
+        <div id="arcanaInfo">
+            @foreach (var item in Model.ItemEnhancement ?? new List<ItemEnhancement>())
+            {
+                await Html.RenderPartialAsync("_ItemEnhancementDetails", item);
+            }
+        </div>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.ImbuedInfo.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

@@ -1,0 +1,96 @@
+﻿@model MageNPCTracker.Models.ArtifactViewModel
+
+@{
+    ViewData["Title"] = "Edit Artifact";
+}
+
+<form asp-action="Edit">
+    <div class="row form-horizonal">
+        <div class="col-md-6">
+            <h4 style="text-align: center;">Artifact Information</h4>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="ArtifactInfo.Name" class="control-label col-md-4" style="display: inline-block; text-align: right;"></label>
+                <div class="col-md-7" style="display: inline-block;">
+                    <input asp-for="ArtifactInfo.Name" class="form-control" />
+                    <span asp-validation-for="ArtifactInfo.Name" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="ArtifactInfo.Reach" class="control-label col-md-4" style="display: inline-block; text-align: right;"></label>
+                <div class="col-md-7" style="display: inline-block;">
+                    <input asp-for="ArtifactInfo.Reach" class="form-control" />
+                    <span asp-validation-for="ArtifactInfo.Reach" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="ArtifactInfo.Path" class="control-label col-md-4" style="display: inline-block; text-align: right;"></label>
+                <div class="col-md-7" style="display: inline-block;">
+                    <input asp-for="ArtifactInfo.Path" class="form-control" />
+                    <span asp-validation-for="ArtifactInfo.Path" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group form-check" style="text-align: center;">
+                <label class="form-check-label" asp-for="ArtifactInfo.ImperialSurcharge">
+                    <input class="form-check-input" asp-for="ArtifactInfo.ImperialSurcharge" />Imperial Surcharge
+                </label>
+            </div>
+            <div class="form-group form-check" style="text-align: center;">
+                <label class="form-check-label" asp-for="ArtifactInfo.YantraBonus">
+                    <input class="form-check-input" asp-for="ArtifactInfo.YantraBonus" />Yantra Bonus
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="ArtifactInfo.Description" class="form-control-label col-md-4 text-right"></label>
+                <div class="col-md-7" style="display: inline-block;">
+                    <textarea asp-for="ArtifactInfo.Description" rows="6" class="form-control"></textarea>
+                    <span asp-validation-for="ArtifactInfo.Description" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </div>
+        <div class="col-md-6">
+            <h4 style="text-align: center;">Artifact Attainments</h4>
+            <div class="form-group" id="attainmentInfo">
+                @foreach (var item in Model.Attainments ?? new List<ArtifactAttainment>())
+                {
+                    await Html.RenderPartialAsync("_ArtifactAttainment", item);
+                }
+            </div>
+
+            <p style="margin-left: 50%;">
+                <input type="button" id="addAttainment" name="addAttainment" value="Add Attainment" />
+            </p>
+        </div>
+    </div>
+    <input type="hidden" asp-for="ArtifactInfo.Id" />
+    <input type="hidden" asp-for="ArtifactInfo.Mana" />
+    <input type="hidden" asp-for="ArtifactInfo.Gnosis" />
+    <input type="hidden" asp-for="ArtifactInfo.Cost" />
+</form>
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script type="text/javascript">
+        $(document).on("click", ".deleteRow", function () {
+            $(this).parents("#attainmentRow:first").remove();
+            return false;
+        });
+
+        $("#addAttainment").on('click', function () {
+            $.ajax({
+                async: false,
+                url: '/Artifact/AddAttainment',
+                success: function (partialView) {
+                    $('#attainmentInfo').append(partialView);
+                }
+            });
+        });
+    </script>
+}
+

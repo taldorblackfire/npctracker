@@ -1,0 +1,132 @@
+﻿@model MageNPCTracker.Models.MageViewModel
+
+@{
+    ViewData["Title"] = "Edit Mage";
+}
+
+<h2>@Model.NpcInfo.Alias (@Model.NpcInfo.RealName)</h2>
+<hr />
+
+<form asp-action="EditMage">
+    <div class="row form-horizontal">
+        <div class="col-md-6">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input asp-for="MageInfo.Npcid" type="hidden" />
+            <input asp-for="MageInfo.MageNpcid" type="hidden" />
+
+            <div class="form-group">
+                <label asp-for="MageInfo.Order" class="control-label col-md-4" style="display: inline-block; text-align: right;"></label>
+                <div class="col-md-7" style="display: inline-block;">
+                    <select asp-for="MageInfo.Order" class="form-control" asp-items="ViewBag.OrderList"></select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="MageInfo.Path" class="control-label col-md-4" style="display: inline-block; text-align: right;"></label>
+                <div class="col-md-7" style="display: inline-block;">
+                    <select asp-for="MageInfo.Path" class="form-control" asp-items="ViewBag.PathList"></select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="MageInfo.Legacy" class="control-label col-md-4" style="display: inline-block; text-align: right;"></label>
+                <div class="col-md-7" style="display: inline-block;">
+                    <select asp-for="MageInfo.Legacy" class="form-control" asp-items="ViewBag.LegacyList">
+                        <option selected value="">--- SELECT ---</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-md-4" style="display: inline-block; text-align: right;">Order Status</label>
+                <div class="col-md-7" style="display: inline-block;">
+                    <select asp-for="MageInfo.OrderStatus" class="form-control" asp-items="ViewBag.OrderStatusList">
+                        <option selected value="">--- SELECT ---</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-md-4" style="display: inline-block; text-align: right;">Consilium Status</label>
+                <div class="col-md-7" style="display: inline-block;">
+                    <select asp-for="MageInfo.ConsiliumStatus" class="form-control" asp-items="ViewBag.ConsiliumStatusList">
+                        <option selected value="">--- SELECT ---</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="MageInfo.Cabal" class="control-label col-md-4" style="display: inline-block; text-align: right;"></label>
+                <div class="col-md-7" style="display: inline-block;">
+                    <select asp-for="MageInfo.Cabal" class="form-control" asp-items="ViewBag.CabalList">
+                        <option selected value="">--- SELECT ---</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="MageInfo.Mentor" class="control-label col-md-4" style="display: inline-block; text-align: right;"></label>
+                <div class="col-md-7" style="display: inline-block;">
+                    <select asp-for="MageInfo.Mentor" class="form-control" asp-items="ViewBag.MentorList">
+                        <option selected value="">--- SELECT ---</option>
+                    </select>
+                    <span asp-validation-for="MageInfo.Mentor" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-md-4" style="display: inline-block; text-align: right;">Signature Nimbus</label>
+                <div class="col-md-7" style="display: inline-block;">
+                    <textarea asp-for="MageInfo.SignatureNimbus" class="form-control"></textarea>
+                    <span asp-validation-for="MageInfo.SignatureNimbus" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-group" style="text-align: center;">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div id="arcanaInfo">
+                @foreach (var item in Model.MageArcana ?? new List<MageNpcarcana>())
+                {
+                    await Html.RenderPartialAsync("_MageArcana", item);
+                }
+                @Html.ValidationMessageFor(model => model.MageArcana, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                <p style="margin-left: 30%;">
+                    <input type="button" id="addArcana" name="addArcana" value="Add Arcana" />
+                </p>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div>
+    <a asp-action="MageIndex">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+        $('#addArcana').on('click', function () {
+            $.ajax({
+                async: false,
+                url: '/NPC/AddNewArcana',
+                success: function (partialView) {
+                    $('#arcanaInfo').append(partialView);
+                }
+            });
+        });
+
+        function deleteFunction(id) {
+            if (id > 0) {
+                $.ajax({
+                    url: '/Spell/DeleteArcana?id=' + id
+                });
+            }
+        }
+
+        $(document).on("click", ".deleteRow", function () {
+            $(this).parents("#spellRow:first").remove();
+            return false;
+        });
+    </script>
+}

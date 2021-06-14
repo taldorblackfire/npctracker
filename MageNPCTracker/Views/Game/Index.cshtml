@@ -1,0 +1,42 @@
+﻿@using Microsoft.AspNetCore.Http; 
+@model IEnumerable<MageNPCTracker.Models.Npcgame>
+
+@{
+    ViewData["Title"] = "Mage Game List";
+}
+
+<h2>Mage Game Lists</h2>
+
+<p><a asp-action="Create">Create New Game</a></p>
+
+<table class="table webgrid-table" id="GameTable">
+    <thead>
+        <tr class="webgrid-header" style="text-align: center;">
+            <th>Name</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            int? gameId = Context.Session.GetInt32("GameId");
+            string divider = "|";
+            <tr class="webgrid-row-style" style="text-align: center;">
+                <td>@Html.ActionLink(@item.Name, "Details", new { id = item.Id })</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    @if (gameId != item.Id) {
+                        <a asp-action="Set" asp-route-id="@item.Id">Set</a><span> |</span>
+                    }
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts{
+    <script type="text/javascript">
+        var table = $('#GameTable').DataTable();
+    </script>
+}

@@ -1,0 +1,70 @@
+﻿@model MageNPCTracker.Models.ArtifactViewModel
+
+@{
+    ViewData["Title"] = "Artifact Details";
+}
+
+    <div class="row form-horizonal">
+        <div class="col-md-6">
+            <h4 style="text-align: center;">@Model.ArtifactInfo.Name</h4>
+            <div class="form-group">
+                <label asp-for="ArtifactInfo.Reach" class="control-label col-md-4" style="display: inline-block; text-align: right;"></label>
+                <div class="col-md-7" style="display: inline-block;">
+                    <input asp-for="ArtifactInfo.Reach" class="form-control" disabled />
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="ArtifactInfo.Path" class="control-label col-md-4" style="display: inline-block; text-align: right;"></label>
+                <div class="col-md-7" style="display: inline-block;">
+                    <input asp-for="ArtifactInfo.Path" class="form-control" disabled />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-md-4" style="text-align: right; display: inline-block;" asp-for="ArtifactInfo.ImperialSurcharge"></label>
+                <div class="col-md-2" style="display: inline-block;">
+                    <input asp-for="ArtifactInfo.ImperialSurcharge" class="form-control" disabled />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-md-4" style="text-align: right; display: inline-block;" asp-for="ArtifactInfo.YantraBonus"></label>
+                <div class="col-md-2" style="display: inline-block;">
+                    <input asp-for="ArtifactInfo.YantraBonus" class="form-control" disabled />
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="ArtifactInfo.Cost" class="control-label col-md-4" style="display: inline-block; text-align: right;"></label>
+                <div class="col-md-7" style="display: inline-block;">
+                    <input asp-for="ArtifactInfo.Cost" class="form-control" disabled />
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="ArtifactInfo.Gnosis" class="control-label col-md-4" style="display: inline-block; text-align: right;"></label>
+                <div class="col-md-7" style="display: inline-block;">
+                    <input asp-for="ArtifactInfo.Gnosis" class="form-control" disabled />
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="ArtifactInfo.Description" class="form-control-label col-md-4 text-right"></label>
+                <div class="col-md-7" style="display: inline-block;">
+                    <textarea asp-for="ArtifactInfo.Description" rows="6" class="form-control" disabled></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </div>
+        <div class="col-md-6">
+            <h4 style="text-align: center;">Artifact Attainments</h4>
+            <div class="form-group">
+                @foreach (var item in Model.Attainments ?? new List<ArtifactAttainment>())
+                {
+                    await Html.RenderPartialAsync("_AttainmentDetails", item);
+                }
+            </div>
+        </div>
+    </div>
+
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.ArtifactInfo.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

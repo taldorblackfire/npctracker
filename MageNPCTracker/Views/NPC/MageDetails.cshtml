@@ -1,0 +1,157 @@
+﻿@model MageNPCTracker.Models.MageViewModel
+
+@{
+    ViewData["Title"] = "Mage Information";
+}
+
+<h2 style="text-align: center;">@Model.NpcInfo.Alias (@Model.NpcInfo.RealName)</h2>
+<hr />
+
+<div class="row form-horizontal">
+    <div class="col-md-6">
+        <h4 style="text-align: center;">Mage Info</h4>
+        <div class="form-group">
+            <label asp-for="MageInfo.Order" class="control-label col-md-4" style="display: inline-block; text-align: right;"></label>
+            <div class="col-md-7" style="display: inline-block;">
+                <select asp-for="MageInfo.Order" class="form-control" disabled asp-items="ViewBag.OrderList"></select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="MageInfo.Path" class="control-label col-md-4" style="display: inline-block; text-align: right;"></label>
+            <div class="col-md-7" style="display: inline-block;">
+                <select asp-for="MageInfo.Path" class="form-control" disabled asp-items="ViewBag.PathList"></select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="MageInfo.Legacy" class="control-label col-md-4" style="display: inline-block; text-align: right;"></label>
+            <div class="col-md-7" style="display: inline-block;">
+                <select asp-for="MageInfo.Legacy" class="form-control" disabled asp-items="ViewBag.LegacyList">
+                    <option value=""></option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-4" style="display: inline-block; text-align: right;">Order Status</label>
+            <div class="col-md-7" style="display: inline-block;">
+                <select asp-for="MageInfo.OrderStatus" class="form-control" disabled asp-items="ViewBag.OrderStatusList">
+                    <option value=""></option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-4" style="display: inline-block; text-align: right;">Consilium Status</label>
+            <div class="col-md-7" style="display: inline-block;">
+                <select asp-for="MageInfo.ConsiliumStatus" class="form-control" disabled asp-items="ViewBag.ConsiliumStatusList">
+                    <option value=""></option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="MageInfo.Cabal" class="control-label col-md-4" style="display: inline-block; text-align: right;"></label>
+            <div class="col-md-7" style="display: inline-block;">
+                <select asp-for="MageInfo.Cabal" class="form-control" disabled asp-items="ViewBag.CabalList">
+                    <option value=""></option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="MageInfo.Mentor" class="control-label col-md-4" style="display: inline-block; text-align: right;"></label>
+            <div class="col-md-7" style="display: inline-block;">
+                <select asp-for="MageInfo.Mentor" class="form-control" disabled asp-items="ViewBag.MentorList">
+                    <option value=""></option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-4" style="display: inline-block; text-align: right;">Signature Nimbus</label>
+            <div class="col-md-7" style="display: inline-block;">
+                <textarea asp-for="MageInfo.SignatureNimbus" class="form-control" readonly></textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-4" style="display: inline-block; text-align: right;">@Model.NpcInfo.SupernaturalFactionNavigation.SupernaturalTrait</label>
+            <div class="col-md-7" style="display: inline-block;">
+                <input asp-for="NpcInfo.SupernaturalTrait" class="form-control" readonly />
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <h4 style="text-align: center;">Arcana Info</h4>
+        <div id="arcanaInfo">
+            @foreach (var item in Model.MageArcana ?? new List<MageNpcarcana>())
+            {
+                await Html.RenderPartialAsync("_MageArcanaDetails", item);
+            }
+        </div>
+    </div>
+</div>
+
+<div class="row form-horizontal">
+    @if (Model.Apprentices.Count > 0)
+    {
+        <div class="col-md-6">
+            <h4 style="text-align: center;">Apprentices</h4>
+            <hr />
+            <div class="form-horizontal">
+                @for (int i = 0; i < Model.Apprentices.Count; i++)
+                {
+                    <div class="col-md-12">
+                        <label class="control-label col-md-12" style="text-align: center;">@Html.ActionLink(Model.Apprentices[i].Alias, "Details", "NPC", new { id = Model.Apprentices[i].Npcid })</label>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    @if (Model.ArtifactList.Count > 0 || Model.ImbuedList.Count > 0)
+    {
+        <div class="col-md-6">
+            <h4 style="text-align: center;">Artifacts/Imbued Items</h4>
+            <div class="form-group" id="itemInfo">
+                @foreach (var item in Model.ImbuedList ?? new List<Npcimbued>())
+                {
+                    await Html.RenderPartialAsync("_NPCImbuedDetails", item);
+                }
+                @foreach (var item in Model.ArtifactList ?? new List<Npcartifact>())
+                {
+                    await Html.RenderPartialAsync("_NPCArtifactDetails", item);
+                }
+            </div>
+        </div>
+    }
+</div>
+
+<div style="text-align: center;">
+    <a asp-action="MageIndex" style="margin-right: 10px;">Back to List</a>
+    @Html.ActionLink("Edit Mage", "EditMage", new { id = Model.NpcInfo.Npcid })
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+        $('#addArcana').on('click', function () {
+            $.ajax({
+                async: false,
+                url: '/NPC/AddNewArcana',
+                success: function (partialView) {
+                    $('#arcanaInfo').append(partialView);
+                }
+            });
+        });
+
+        function deleteFunction(id) {
+            if (id > 0) {
+                $.ajax({
+                    url: '/Spell/DeleteArcana?id=' + id
+                });
+            }
+        }
+
+        $(".deleteRow").on("click", function () {
+            $(this).parents("#spellRow:first").remove();
+            return false;
+        });
+    </script>
+}

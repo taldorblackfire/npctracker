@@ -1,0 +1,53 @@
+﻿@model MageNPCTracker.Models.MageCabal
+
+@{
+    ViewData["Title"] = "Create Mage Cabal";
+}
+
+<h4>Mage Cabal Information</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="CabalName" class="control-label"></label>
+                <input asp-for="CabalName" class="form-control" />
+                <span asp-validation-for="CabalName" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check" style="text-align: center;">
+                <label class="form-check-label" asp-for="RightofEmeritus">
+                    <input class="form-check-input" asp-for="RightofEmeritus" />Right of Emeritus
+                </label>
+            </div>
+            <div class="form-group form-check" style="text-align: center;">
+                <label class="form-check-label" asp-for="RightofSanctuary">
+                    <input class="form-check-input" asp-for="RightofSanctuary" />Right of Sanctuary
+                </label>
+            </div>
+            <div class="form-group form-check" style="text-align: center;">
+                <label class="form-check-label" asp-for="RightofCrossing">
+                    <input class="form-check-input" asp-for="RightofCrossing" />Right of Crossing
+                </label>
+            </div>
+            <div class="form-group form-check" style="text-align: center;">
+                <label class="form-check-label" asp-for="RightofNemesis">
+                    <input class="form-check-input" asp-for="RightofNemesis" />Right of Nemesis
+                </label>
+            </div>
+            <div class="form-group form-check" style="text-align: center;">
+                <label class="form-check-label" asp-for="RightofHospitality">
+                    <input class="form-check-input" asp-for="RightofHospitality" />Right of Hospitality
+                </label>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

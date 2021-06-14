@@ -1,0 +1,18 @@
+﻿@using HtmlHelpers.BeginCollectionItemCore
+@model Npcartifact
+
+@using (Html.BeginCollectionItem("ArtifactList"))
+{
+    @Html.HiddenFor(model => model.NpcartifactId)
+    <div id="itemRow">
+        <div id="artifactRow" class="form-group">
+            <label class="control-label col-md-4" style="display: inline-block; text-align: right;">Artifact</label>
+            <div class="col-md-7" style="display: inline-block;">
+                <select asp-for="ArtifactId" class="form-control" asp-items="ViewBag.ArtifactList"></select>
+            </div>
+        </div>
+        <p style="margin-left: 30%;">
+            <a href="#" class="deleteRow">Delete Item</a>
+        </p>
+    </div>
+}

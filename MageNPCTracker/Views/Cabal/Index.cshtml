@@ -1,0 +1,46 @@
+﻿@model IEnumerable<MageNPCTracker.Models.MageCabal>
+
+@{
+    ViewData["Title"] = "Cabal List";
+}
+
+<h2>Mage NPC Cabals</h2>
+
+<p><a asp-action="Create">Create New Cabal</a></p>
+
+<table class="table webgrid-table" id="CabalTable">
+    <thead>
+        <tr class="webgrid-header" style="text-align: center;">
+            <th>Cabal Name</th>
+            <th>Right of Emeritus</th>
+            <th>Right of Sanctuary</th>
+            <th>Right of Crossing</th>
+            <th>Right of Nemesis</th>
+            <th>Right of Hospitality</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr class="webgrid-row-style" style="text-align: center;">
+                <td>@Html.ActionLink(@item.CabalName, "Details", new { id = item.MageCabalid })</td>
+                <td>@item.RightofEmeritus</td>
+                <td>@item.RightofSanctuary</td>
+                <td>@item.RightofCrossing</td>
+                <td>@item.RightofNemesis</td>
+                <td>@item.RightofHospitality</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.MageCabalid">Edit</a> |
+                    <a asp-action="Delete" asp-route-id="@item.MageCabalid">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts{
+    <script type="text/javascript">
+        var table = $('#CabalTable').DataTable();
+    </script>
+}

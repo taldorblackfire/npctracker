@@ -1,0 +1,31 @@
+﻿@model MageNPCTracker.Models.Npcgame
+
+@{
+    ViewData["Title"] = "Edit Mage Game";
+}
+
+<h2 style="text-align: center;">Edit Mage Game</h2>
+<hr />
+<form asp-action="Edit">
+    <div class="row form-horizontal">
+        <div class="col-md-6">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Name" class="control-label col-md-4" style="text-align: right; display: inline-block;"></label>
+                <div class="col-md-7" style="display: inline-block;">
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </div>
+    </div>
+</form>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

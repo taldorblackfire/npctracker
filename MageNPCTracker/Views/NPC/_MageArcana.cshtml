@@ -1,0 +1,25 @@
+﻿@using HtmlHelpers.BeginCollectionItemCore
+@model MageNpcarcana
+
+@using (Html.BeginCollectionItem("MageArcana"))
+{
+    @Html.HiddenFor(model => model.MageNpcarcanaId)
+    @Html.HiddenFor(model => model.Npcid)
+    <div id="spellRow">
+        <div id="arcanaRow" class="form-group">
+            <label class="control-label col-md-4" style="display: inline-block; text-align: right;">Arcana</label>
+            <div class="col-md-7" style="display: inline-block;">
+                <select asp-for="ArcanaId" class="form-control" asp-items="ViewBag.ArcanaId"></select>
+            </div>
+        </div>
+        <div id="levelRow" class="form-group">
+            <label asp-for="Level" class="control-label col-md-4" style="display: inline-block; text-align: right;"></label>
+            <div class="col-md-7" style="display: inline-block;">
+                <input asp-for="Level" class="form-control" />
+            </div>
+        </div>
+        <p style="margin-left: 30%;">
+            <a href="#" class="deleteRow">Delete Arcana</a>
+        </p>
+    </div>
+}

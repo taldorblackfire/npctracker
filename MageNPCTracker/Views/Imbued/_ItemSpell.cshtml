@@ -1,0 +1,17 @@
+﻿@using HtmlHelpers.BeginCollectionItemCore
+@model ImbuedItemSpell
+
+@using (Html.BeginCollectionItem("Spells"))
+{
+    @Html.HiddenFor(model => model.ImbuedItemId)
+    @Html.HiddenFor(model => model.ImbuedItemSpellId)
+    <div id="itemSpellRow">
+        <label asp-for="SpellId" class="control-label col-md-4" style="display: inline-block; text-align: right;">Spell</label>
+        <div class="col-md-7" style="display: inline-block;">
+            <select asp-for="SpellId" class="form-control itemSpellSelect" asp-items="ViewBag.Spells"></select>
+        </div>
+        <p style="margin-left: 30%;">
+            <a href="#" class="deleteRow">Delete Spell</a>
+        </p>
+    </div>
+}

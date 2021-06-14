@@ -1,0 +1,18 @@
+﻿@using HtmlHelpers.BeginCollectionItemCore
+@model Npcimbued
+
+@using (Html.BeginCollectionItem("ImbuedList"))
+{
+    @Html.HiddenFor(model => model.NpcimbuedId)
+    <div id="itemRow">
+        <div id="imbuedRow" class="form-group">
+            <label class="control-label col-md-4" style="display: inline-block; text-align: right;">Imbued Item</label>
+            <div class="col-md-7" style="display: inline-block;">
+                <select asp-for="ImbuedId" class="form-control" asp-items="ViewBag.ImbuedItem"></select>
+            </div>
+        </div>
+        <p style="margin-left: 30%;">
+            <a href="#" class="deleteRow">Delete Item</a>
+        </p>
+    </div>
+}

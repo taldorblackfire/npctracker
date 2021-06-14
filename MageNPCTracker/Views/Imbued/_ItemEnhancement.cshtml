@@ -1,0 +1,31 @@
+﻿@using HtmlHelpers.BeginCollectionItemCore
+@model ItemEnhancement
+
+@using (Html.BeginCollectionItem("ItemEnhancement"))
+{
+    @Html.HiddenFor(model => model.EnhancedItemId)
+    @Html.HiddenFor(model => model.ImbuedItemId)
+    @Html.HiddenFor(model => model.Id)
+    @Html.HiddenFor(model => model.EnhancementCost)
+    <div id="enhancementRow">
+        <div id="bonusRow" class="form-group">
+            <label class="control-label col-md-4" style="display: inline-block; text-align: right;">Bonus</label>
+            <div class="col-md-7" style="display: inline-block;">
+                <select asp-for="EnhancementId" class="form-control enhancementSelect" asp-items="ViewBag.EnhancementId">
+                    <option value=""></option>
+                </select>
+            </div>
+        </div>
+        <div id="spellRow" class="form-group">
+            <label asp-for="SpellId" class="control-label col-md-4" style="display: inline-block; text-align: right;">Spell</label>
+            <div class="col-md-7" style="display: inline-block;">
+                <select asp-for="SpellId" class="form-control spellSelect" asp-items="ViewBag.SpellId">
+                    <option value=""></option>
+                </select>
+            </div>
+        </div>
+        <p style="margin-left: 30%;">
+            <a href="#" class="deleteRow">Delete Enhancement</a>
+        </p>
+    </div>
+}

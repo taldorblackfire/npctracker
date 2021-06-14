@@ -1,0 +1,11 @@
+﻿@using HtmlHelpers.BeginCollectionItemCore
+@model MageNpcarcana
+
+@using (Html.BeginCollectionItem("MageArcana"))
+{
+    <div id="spellRow">
+        <div id="arcanaRow" class="form-group">
+            <label class="control-label col-md-12" style="display: inline-block; text-align: center;">@Model.Arcana.Arcana @Model.Level</label>
+        </div>
+    </div>
+}

@@ -1,0 +1,17 @@
+﻿@using HtmlHelpers.BeginCollectionItemCore
+@model ArtifactAttainment
+
+@using (Html.BeginCollectionItem("Attainments"))
+{
+    @Html.HiddenFor(model => model.ArtifactId)
+    @Html.HiddenFor(model => model.Id)
+    <div id="attainmentRow">
+        <label asp-for="AttainmentId" class="control-label col-md-4" style="display: inline-block; text-align: right;">Attainment</label>
+        <div class="col-md-7" style="display: inline-block;">
+            <select asp-for="AttainmentId" class="form-control itemSpellSelect" asp-items="ViewBag.ArtifactAttainments"></select>
+        </div>
+        <p style="margin-left: 30%;">
+            <a href="#" class="deleteRow">Delete Attainment</a>
+        </p>
+    </div>
+}

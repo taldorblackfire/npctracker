@@ -1,0 +1,132 @@
+﻿@model MageNPCTracker.Models.NPCViewModel
+
+@{
+    ViewData["Title"] = "Edit NPC";
+}
+
+<h2>@Model.NpcInfo.RealName</h2>
+<hr />
+
+<form asp-action="Edit">
+    <div class="row form-horizontal">
+        <div class="col-md-6">
+            <h4 style="text-align: center;">Basic NPC Info</h4>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="NpcInfo.Npcid" />
+            <div class="form-group">
+                <label asp-for="NpcInfo.Alias" class="control-label col-md-4" style="display: inline-block; text-align: right;"></label>
+                <div class="col-md-7" style="display: inline-block;">
+                    <input asp-for="NpcInfo.Alias" class="form-control" />
+                    <span asp-validation-for="NpcInfo.Alias" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="NpcInfo.RealName" class="control-label col-md-4" style="display: inline-block; text-align: right;"></label>
+                <div class="col-md-7" style="display: inline-block;">
+                    <input asp-for="NpcInfo.RealName" class="form-control" />
+                    <span asp-validation-for="NpcInfo.RealName" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="NpcInfo.Gender" class="control-label col-md-4" style="display: inline-block; text-align: right;"></label>
+                <div class="col-md-7" style="display: inline-block;">
+                    <input asp-for="NpcInfo.Gender" class="form-control" />
+                    <span asp-validation-for="NpcInfo.Gender" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="NpcInfo.SupernaturalFaction" class="control-label col-md-4" style="display: inline-block; text-align: right;"></label>
+                <div class="col-md-7" style="display: inline-block;">
+                    <select asp-for="NpcInfo.SupernaturalFaction" class="form-control" asp-items="ViewBag.SupernaturalFaction"></select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="NpcInfo.GameId" class="control-label col-md-4" style="display: inline-block; text-align: right;">Game</label>
+                <div class="col-md-7" style="display: inline-block;">
+                    <select asp-for="NpcInfo.GameId" class="form-control" asp-items="ViewBag.Games"></select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="NpcInfo.SupernaturalTrait" class="control-label col-md-4" style="display: inline-block; text-align: right;"></label>
+                <div class="col-md-7" style="display: inline-block;">
+                    <input asp-for="NpcInfo.SupernaturalTrait" class="form-control" />
+                    <span asp-validation-for="NpcInfo.SupernaturalTrait" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="NpcInfo.Description" class="control-label col-md-4" style="display: inline-block; text-align: right;"></label>
+                <div class="col-md-7" style="display: inline-block;">
+                    <textarea asp-for="NpcInfo.Description" class="form-control"></textarea>
+                    <span asp-validation-for="NpcInfo.Description" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="NpcInfo.Notes" class="control-label col-md-4" style="display: inline-block; text-align: right;"></label>
+                <div class="col-md-7" style="display: inline-block;">
+                    <textarea asp-for="NpcInfo.Notes" class="form-control"></textarea>
+                    <span asp-validation-for="NpcInfo.Notes" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label col-md-4" style="display: inline-block; text-align: right;">
+                    <input class="form-check-input" asp-for="NpcInfo.Alive" /> @Html.DisplayNameFor(model => model.NpcInfo.Alive)
+                </label>
+            </div>
+            <div class="form-group" style="text-align: center;">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </div>
+        <div class="col-md-6">
+            <h4 style="text-align: center;">Artifacts/Imbued Items Owned</h4>
+            <div class="form-group" id="itemInfo">
+                @foreach (var item in Model.ImbuedList ?? new List<Npcimbued>())
+                {
+                    await Html.RenderPartialAsync("_NPCImbued", item);
+                }
+                @foreach (var item in Model.ArtifactList ?? new List<Npcartifact>())
+                {
+                    await Html.RenderPartialAsync("_NPCArtifact", item);
+                }
+            </div>
+
+            <p style="margin-left: 30%;">
+                <input type="button" id="addImbued" name="addImbued" value="Add Imbued Item" />
+                <input type="button" id="addArtifact" name="addArtifact" value="Add Artifact" />
+            </p>
+        </div>
+    </div>
+</form>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $("#addArtifact").on('click', function () {
+            $.ajax({
+                async: false,
+                url: '/NPC/AddArtifact',
+                success: function (partialView) {
+                    $('#itemInfo').append(partialView);
+                }
+            });
+        });
+
+        $(document).on("click", ".deleteRow", function () {
+            $(this).parents("#itemRow:first").remove();
+            return false;
+        });
+
+        $("#addImbued").on('click', function () {
+            $.ajax({
+                async: false,
+                url: '/NPC/AddImbued',
+                success: function (partialView) {
+                    $('#itemInfo').append(partialView);
+                }
+            });
+        });
+    </script>
+}
+

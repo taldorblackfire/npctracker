@@ -1,0 +1,145 @@
+﻿@model MageIndexViewModel
+
+@{
+    ViewData["Title"] = "CofD NPC List";
+}
+
+<h2 style="text-align: center;">Mage NPC Index</h2>
+
+<span style="margin-right: 10px;">@Html.ActionLink("Create New NPC", "Create", "NPC", null)</span>
+
+<table id="searchTable" class="table">
+    <thead>
+        <tr class="webgrid-header" style="text-align: center;">
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="webgrid-row-style" style="text-align: center;">
+            <td>@Html.DropDownList("Arcana", (IEnumerable<SelectListItem>)ViewBag.Arcana, "Select Arcana", htmlAttributes: new { @class = "form-control"})</td>
+            <td>@Html.DropDownList("Level", (IEnumerable<SelectListItem>)ViewBag.Levels, "Select Level", htmlAttributes: new { @class = "form-control" })</td>
+        </tr>
+    </tbody>
+</table>
+
+<table id="NPCTable" class="table webgrid-table">
+    <thead>
+        <tr class="webgrid-header" style="text-align: center;">
+            <th>Alias</th>
+            <th>Gnosis</th>
+            <th>Cabal</th>
+            <th>Legacy</th>
+            <th>Order</th>
+            <th>Order Status</th>
+            <th>Consilium Status</th>
+            <th>Arcana</th>
+            <th>Notes</th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (int i = 0; i < Model.NpcInfo.Count; i++)
+        {
+            string arcana = "";
+            int npcId = Model.NpcInfo[i].Npcid;
+            List<string> arcanaList = Model.MageArcana.Where(x => x.Npcid == npcId).Select(x => x.Arcana.Arcana).ToList();
+            List<int> arcanaLevel = Model.MageArcana.Where(x => x.Npcid == npcId).Select(x => x.Level).ToList();
+            for (int j = 0; j < arcanaList.Count; j++)
+            {
+                arcana = arcana + arcanaList[j].Trim() + " " + arcanaLevel[j] + ", ";
+            }
+
+            arcana = arcana.Trim().TrimEnd(',');
+
+            <tr class="webgrid-row-style" style="text-align: center;">
+                @if (Model.NpcInfo[i].Alive)
+                {
+                    <td>@Html.ActionLink(Model.NpcInfo[i].Alias, "Details", new { id = Model.NpcInfo[i].Npcid })</td>
+                }
+                else
+                {
+                    <td>@Html.ActionLink(Model.NpcInfo[i].Alias + " (Dead)", "Details", new { id = Model.NpcInfo[i].Npcid })</td>
+                }
+                <td>@Model.NpcInfo[i].SupernaturalTrait.ToString()</td>
+                @if (Model.MageInfo[i].CabalNavigation != null)
+                {
+                    <td>@Html.ActionLink(Model.MageInfo[i].CabalNavigation.CabalName, "Details", "Cabal", new { id = Model.MageInfo[i].Cabal })</td>
+                }
+                else
+                {
+                    <td></td>
+                }
+                @if (Model.MageInfo[i].LegacyNavigation != null)
+                {
+                    <td><a href="https://dbeditor.azurewebsites.net/Legacy/Details/@Model.MageInfo[i].LegacyNavigation.LegacyId">@Model.MageInfo[i].LegacyNavigation.LegacyName</a></td>
+                }
+                else
+                {
+                    <td></td>
+                }
+                <td>@Model.MageInfo[i].OrderNavigation.OrderName</td>
+                @if (Model.MageInfo[i].OrderStatusNavigation != null)
+                {
+                    <td><a href="https://dbeditor.azurewebsites.net/Titles/DetailsCaucus/@Model.MageInfo[i].OrderStatusNavigation.MageCaucusId">@Model.MageInfo[i].OrderStatusNavigation.Title</a></td>
+                }
+                else
+                {
+                    <td></td>
+                }
+                @if (Model.MageInfo[i].ConsiliumStatusNavigation != null)
+                {
+                    <td><a href="https://dbeditor.azurewebsites.net/Titles/DetailsConsilium/@Model.MageInfo[i].ConsiliumStatusNavigation.ConsiliumTitleId">@Model.MageInfo[i].ConsiliumStatusNavigation.Title</a></td>
+                }
+                else
+                {
+                    <td></td>
+                }
+                <td>@arcana</td>
+                <td>@Model.NpcInfo[i].Notes</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts{ 
+    <script type="text/javascript">
+        var table = $('#NPCTable').DataTable();
+
+        $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+            var level = 1;
+            if ($('#Level option:selected').text() != "Select Level") {
+                level = parseInt($('#Level option:selected').text());
+            }
+
+            if ($('#Arcana option:selected').text() == "Select Arcana") {
+                return true;
+            }
+
+            var arcana = $('#Arcana option:selected').text().trim();
+
+            var totalArcana = data[7];
+            var splitArcana = totalArcana.split(',');
+
+            for (i = 0; i < splitArcana.length; i++) {
+                if (splitArcana[i].indexOf(arcana) >= 0) {
+                    var splitLevel = splitArcana[i].split(' ');
+                    var currentLevel = 0;
+                    if (splitLevel.length > 2) {
+                        currentLevel = parseInt(splitLevel[2]);
+                    }
+                    else {
+                        currentLevel = parseInt(splitLevel[1]);
+                    }
+                    if (currentLevel >= level) {
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
+                }
+            }
+        });
+
+        $('#Arcana, #Level').change(function () {
+            table.draw();
+        });
+    </script>
+}

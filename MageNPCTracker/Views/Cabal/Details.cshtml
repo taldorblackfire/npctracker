@@ -1,0 +1,90 @@
+﻿@model MageNPCTracker.Models.CabalViewModel
+
+@{
+    ViewData["Title"] = "Mage Cabal Details";
+}
+
+<h2 style="text-align: center;">@Model.CabalInfo.CabalName</h2>
+<hr/>
+<div class="row form-horizontal">
+    <div class="col-md-6">
+        <h4 style="text-align: center;">Cabal Rights Followed</h4>
+        <div class="form-group">
+            <label class="control-label col-md-4" asp-for="CabalInfo.RightofEmeritus" style="text-align: right; display: inline-block;"></label>
+            <div class="col-md-2" style="display: inline-block;">
+                <input asp-for="CabalInfo.RightofEmeritus" class="form-control" disabled />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-4" asp-for="CabalInfo.RightofSanctuary" style="text-align: right; display: inline-block;"></label>
+            <div class="col-md-2" style="display: inline-block;">
+                <input asp-for="CabalInfo.RightofSanctuary" class="form-control" disabled />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-4" asp-for="CabalInfo.RightofCrossing" style="text-align: right; display: inline-block;"></label>
+            <div class="col-md-2" style="display: inline-block;">
+                <input asp-for="CabalInfo.RightofCrossing" class="form-control" disabled />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-4" asp-for="CabalInfo.RightofNemesis" style="text-align: right; display: inline-block;"></label>
+            <div class="col-md-2" style="display: inline-block;">
+                <input asp-for="CabalInfo.RightofNemesis" class="form-control" disabled />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-4" asp-for="CabalInfo.RightofHospitality" style="text-align: right; display: inline-block;"></label>
+            <div class="col-md-2" style="display: inline-block;">
+                <input asp-for="CabalInfo.RightofHospitality" class="form-control" disabled />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="CabalInfo.GameId" class="control-label col-md-4" style="display: inline-block; text-align: right;">Game</label>
+            <div class="col-md-7" style="display: inline-block;">
+                <input asp-for="CabalInfo.Game.Name" class="form-control" disabled />
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <h4 style="text-align: center;">Cabal Members</h4>
+        @foreach (var item in Model.CabalMembers)
+        {
+            string name = "";
+            <div class="form-group">
+
+                @if(item.Alive == false)
+                {
+                    name = item.Alias + " (Dead)";
+                }
+                else
+                {
+                    name = item.Alias;
+                }
+
+                <label class="control-label col-md-12" style="text-align: center;">@Html.ActionLink(name, "Details", "NPC", new { id = item.Npcid })</label>
+            </div>
+        }
+    </div>
+
+    <div class="col-md-6">
+        <h4 style="text-align: center;">Imbued Items</h4>
+        @foreach (var item in Model.ImbuedItems)
+        {
+            await Html.RenderPartialAsync("_NPCImbuedDetails", item);
+        }
+    </div>
+
+    <div class="col-md-6">
+        <h4 style="text-align: center;">Artifacts</h4>
+        @foreach (var item in Model.Artifacts)
+        {
+            await Html.RenderPartialAsync("_NPCArtifactDetails", item);
+        }
+    </div>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.CabalInfo.MageCabalid">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
