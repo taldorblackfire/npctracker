@@ -46,7 +46,7 @@ namespace MageNPCTracker.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Server=mystariaserver.database.windows.net;Database=Mystaria;user id=mystariaadmin;password=mystaria!1;");
+                optionsBuilder.UseSqlServer("");
             }
         }
 
