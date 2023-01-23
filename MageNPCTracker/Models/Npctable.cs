@@ -12,6 +12,7 @@ namespace MageNPCTracker.Models
             MageNpcarcana = new HashSet<MageNpcarcana>();
             Npcartifact = new HashSet<Npcartifact>();
             Npcimbued = new HashSet<Npcimbued>();
+            MageNpctable = new HashSet<MageNpctable>();
         }
 
         public int Npcid { get; set; }
@@ -27,6 +28,7 @@ namespace MageNPCTracker.Models
 
         public virtual RefSupernaturalFaction SupernaturalFactionNavigation { get; set; }
         public virtual Npcgame Game { get; set; }
+        public virtual ICollection<MageNpctable> MageNpctable { get; set; }
         public virtual ICollection<MageApprenticeTable> MageApprenticeTableMentor { get; set; }
         public virtual ICollection<MageApprenticeTable> MageApprenticeTableNpc { get; set; }
         public virtual ICollection<MageNpcarcana> MageNpcarcana { get; set; }

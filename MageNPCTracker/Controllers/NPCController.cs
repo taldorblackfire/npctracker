@@ -9,12 +9,17 @@ using System.Collections;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
-
 namespace MageNPCTracker.Controllers
 {
     public class NPCController : Controller
     {
         public CofDContext db = new CofDContext();
+        public List<NPCView> view = new List<NPCView>();
+
+        public NPCController()
+        {
+            view = db.NPCView.ToList();
+        }
 
         public ActionResult AddNewArcana()
         {
@@ -52,33 +57,51 @@ namespace MageNPCTracker.Controllers
         public IActionResult Create(NPCViewModel newNpc)
         {
             var id = HttpContext.Session.GetInt32("GameId");
-            if (id == null)
+
+            if (ModelState.IsValid)
             {
-                ModelState.AddModelError("", "You must specify a game to create an NPC to associate it with a game");
-                return View(newNpc);
-            }
-            else
-            {
-                newNpc.NpcInfo.GameId = (int)id;
-                db.Npctable.Add(newNpc.NpcInfo);
-                db.SaveChanges();
-
-                for (int i = 0; i < newNpc.ImbuedList.Count; i++)
+                if (id == null)
                 {
-                    newNpc.ImbuedList[i].Npcid = newNpc.NpcInfo.Npcid;
-                    db.Npcimbued.Add(newNpc.ImbuedList[i]);
-                }
-                db.SaveChanges();
+                    ModelState.AddModelError("", "You must specify a game to create an NPC to associate it with a game");
 
-                for (int i = 0; i < newNpc.ArtifactList.Count; i++)
-                {
-                    newNpc.ArtifactList[i].Npcid = newNpc.NpcInfo.Npcid;
-                    db.Npcartifact.Add(newNpc.ArtifactList[i]);
+                    ViewBag.SupernaturalFaction = new SelectList(db.RefSupernaturalFaction.OrderBy(x => x.SupernaturalFactionId), "SupernaturalFactionId", "Name");
+
+                    return View(newNpc);
                 }
-                db.SaveChanges();
+                else
+                {
+                    newNpc.NpcInfo.GameId = (int)id;
+                    db.Npctable.Add(newNpc.NpcInfo);
+                    db.SaveChanges();
+
+                    for (int i = 0; i < newNpc.ImbuedList.Count; i++)
+                    {
+                        if (newNpc.ImbuedList[i].ImbuedId > 0)
+                        {
+                            newNpc.ImbuedList[i].Npcid = newNpc.NpcInfo.Npcid;
+                            db.Npcimbued.Add(newNpc.ImbuedList[i]);
+                        }
+                    }
+                    db.SaveChanges();
+
+                    for (int i = 0; i < newNpc.ArtifactList.Count; i++)
+                    {
+                        if (newNpc.ArtifactList[i].ArtifactId > 0)
+                        {
+                            newNpc.ArtifactList[i].Npcid = newNpc.NpcInfo.Npcid;
+                            db.Npcartifact.Add(newNpc.ArtifactList[i]);
+                        }
+                    }
+                    db.SaveChanges();
+                }
+
+
+                return RedirectToAction("Index");
             }
 
-            return RedirectToAction("Index");
+            ViewBag.SupernaturalFaction = new SelectList(db.RefSupernaturalFaction.OrderBy(x => x.SupernaturalFactionId), "SupernaturalFactionId", "Name");
+
+            return View(newNpc);
         }
 
         public IActionResult CreateMage()
@@ -150,6 +173,27 @@ namespace MageNPCTracker.Controllers
             return View(newMage);
         }
 
+        public IActionResult Delete(int? id)
+        {
+            if(id == null) { return NotFound(); }
+
+            var npc = view.Where(x => x.NPCId == id).FirstOrDefault();
+
+            if (npc == null) { return NotFound(); }
+            else return View(npc);
+        }
+
+        // POST: Artifact/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var npc = await db.Npctable.FindAsync(id);
+            db.Npctable.Remove(npc);
+            await db.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
         public IActionResult Details(int? id)
         {
             if (id == null) return new StatusCodeResult(400);
@@ -218,6 +262,11 @@ namespace MageNPCTracker.Controllers
                         npc.ImbuedList[i].Npcid = npc.NpcInfo.Npcid;
                         db.Npcimbued.Add(npc.ImbuedList[i]);
                     }
+                    else
+                    {
+                        Npcimbued imbued = npc.ImbuedList[i];
+                        db.Entry(imbued).State = EntityState.Modified;
+                    }
                 }
 
                 for (int i = 0; i < npc.ArtifactList.Count; i++)
@@ -226,6 +275,11 @@ namespace MageNPCTracker.Controllers
                     {
                         npc.ArtifactList[i].Npcid = npc.NpcInfo.Npcid;
                         db.Npcartifact.Add(npc.ArtifactList[i]);
+                    }
+                    else
+                    {
+                        Npcartifact artifact = npc.ArtifactList[i];
+                        db.Entry(artifact).State = EntityState.Modified;
                     }
                 }
 
@@ -360,17 +414,37 @@ namespace MageNPCTracker.Controllers
 
             if (gameId == null) gameId = 0;
 
-            List<Npctable> npcs = db.Npctable.Where(x => x.SupernaturalFaction == 2 && x.GameId == gameId).OrderBy(x => x.Alias).ToList();
+            var npcs = view.Where(x => x.GameId == gameId).ToList();
 
             for(int i = 0; i < npcs.Count; i++)
             {
-                int npcId = npcs[i].Npcid;
-                if (db.MageNpctable.Where(x => x.Npcid == npcId).FirstOrDefault() != null)
-                {
-                    mageIndex.MageInfo.Add(db.MageNpctable.Include(x => x.CabalNavigation).Include(x => x.OrderNavigation).Include(x => x.OrderStatusNavigation).Include(x => x.ConsiliumStatusNavigation).Include(x => x.LegacyNavigation).FirstOrDefault(x => x.Npcid == npcId));
+                int npcId = npcs[i].NPCId;
 
-                    mageIndex.MageArcana.AddRange(db.MageNpcarcana.Include(x => x.Arcana).Where(x => x.Npcid == npcId));
-                    mageIndex.NpcInfo.Add(npcs[i]);
+                if (!mageIndex.MageInfo.Select(x => x.NPCId).Contains(npcId))
+                {
+                    MageInfo info = new MageInfo();
+                    info.NPCId = npcId;
+                    info.Notes = npcs[i].Notes;
+                    info.Legacy = npcs[i].Legacy;
+                    info.Gnosis = npcs[i].Gnosis;
+                    info.OrderTitle = npcs[i].OrderTitle;
+                    info.ShadowName = npcs[i].ShadowName;
+                    info.Cabal = npcs[i].Cabal;
+                    info.ConsiliumTitle = npcs[i].ConsiliumTitle;
+                    info.Alive = npcs[i].Alive;
+                    info.CabalId = npcs[i].CabalId;
+                    info.ConsiliumStatusId = npcs[i].ConsiliumStatusId;
+                    info.OrderStatusId = npcs[i].OrderStatusId;
+                    info.LegacyId = npcs[i].LegacyId;
+                    info.Order = npcs[i].Order;
+
+                    List<string> arcanaList = npcs.Where(x => x.NPCId == npcId).Select(x => x.Arcana).ToList();
+                    List<int> levelList = npcs.Where(x => x.NPCId == npcId).Select(x => x.Level).ToList();
+
+                    for(int j = 0; j < arcanaList.Count; j++) info.Arcana += arcanaList[j] + " " + levelList[j] + ", ";
+                    info.Arcana = info.Arcana.Trim().TrimEnd(',');
+
+                    mageIndex.MageInfo.Add(info);
                 }
             }
 

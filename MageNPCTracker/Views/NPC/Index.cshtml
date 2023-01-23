@@ -22,11 +22,14 @@
         @foreach(var item in Model)
         {
             <tr class="webgrid-row-style" style="text-align: center;">
-                <td>@Html.ActionLink(item.Alias, "Details", new { id = item.Npcid })</td>
+
+                @if(item.Alias != null){
+                    <td>@Html.ActionLink(item.Alias, "Details", new { id = item.Npcid })</td>
+                }
                 <td>@Html.ActionLink(item.RealName, "Details", new { id = item.Npcid })</td>
                 <td>@Html.ActionLink(item.SupernaturalTrait.ToString(), "Details", new { id = item.Npcid })</td>
                 <td>@Html.ActionLink(item.Alive.ToString(), "Details", new { id = item.Npcid })</td>
-                <td>@Html.ActionLink("Edit NPC", "Edit", new { id = item.Npcid })</td>
+                <td>@Html.ActionLink("Edit NPC", "Edit", new { id = item.Npcid }) | @Html.ActionLink("Delete", "Delete", new { id = item.Npcid })</td>
             </tr>
         }
     </tbody>

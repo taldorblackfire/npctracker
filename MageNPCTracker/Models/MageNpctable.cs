@@ -8,7 +8,7 @@ namespace MageNPCTracker.Models
         public int MageNpcid { get; set; }
         public int Npcid { get; set; }
         public int? Order { get; set; }
-        public int Path { get; set; }
+        public int? Path { get; set; }
         public int? Legacy { get; set; }
         public int? OrderStatus { get; set; }
         public int? ConsiliumStatus { get; set; }
@@ -22,5 +22,6 @@ namespace MageNPCTracker.Models
         public virtual MageCaucusInfo OrderStatusNavigation { get; set; }
         public virtual MageConsiliumTitles ConsiliumStatusNavigation { get; set; }
         public virtual MagePath PathNavigation { get; set; }
+        public virtual Npctable Npctable { get; set; }
     }
 }

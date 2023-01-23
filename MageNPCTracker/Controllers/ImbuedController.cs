@@ -11,6 +11,12 @@ namespace MageNPCTracker.Controllers
     public class ImbuedController : Controller
     {
         public CofDContext _context = new CofDContext();
+        private readonly List<ImbuedView> view = new List<ImbuedView>();
+
+        public ImbuedController()
+        {
+            view = _context.ImbuedView.ToList();
+        }
 
         public ActionResult AddItemEnhancement()
         {
@@ -29,8 +35,31 @@ namespace MageNPCTracker.Controllers
         // GET: Imbued
         public IActionResult Index()
         {
-            var ImbuedTable = _context.ImbuedTable;
-            return View(ImbuedTable.ToList());
+            var vm = new ImbuedIndexViewModel();
+
+            for (int i = 0; i < view.Count; i++)
+            {
+                int itemId = view[i].Id;
+                if (!vm.Info.Select(x => x.Id).Contains(itemId))
+                {
+                    ImbuedInfo info = new ImbuedInfo();
+                    info.Id = itemId;
+                    info.Mana = view[i].Mana;
+                    info.Name = view[i].Name;
+                    info.BatteryDots = view[i].BatteryDots;
+                    info.Cost = view[i].Cost;
+
+                    List<string> spellNames = view.Where(x => x.Id == itemId).Select(x => x.SpellName).ToList();
+
+                    for (int j = 0; j < spellNames.Count; j++) info.SpellName += spellNames[j] + ", ";
+                    info.SpellName = info.SpellName.Trim().TrimEnd(',');
+                    vm.Info.Add(info);
+                }
+            }
+
+            ViewBag.SpellList = new SelectList(_context.SpellTable.OrderBy(s => s.SpellName), "Id", "SpellName");
+            ViewBag.Arcana = new SelectList(_context.ArcanaTable, "Id", "Arcana");
+            return View(vm);
         }
 
         // GET: Imbued/Details/5
@@ -67,7 +96,9 @@ namespace MageNPCTracker.Controllers
         {
             if (ModelState.IsValid)
             {
-                imbuedTable.ImbuedInfo.Mana = 1;
+                if (imbuedTable.Spells.Count > 0) imbuedTable.ImbuedInfo.Mana = 1;
+                else imbuedTable.ImbuedInfo.Mana = 0;
+
                 imbuedTable.ImbuedInfo.BatteryDots = 0;
 
                 List<ImbuedItemSpell> imbuedSpells = new List<ImbuedItemSpell>();
@@ -207,7 +238,8 @@ namespace MageNPCTracker.Controllers
         {
             if (ModelState.IsValid)
             {
-                imbuedTable.ImbuedInfo.Mana = 1;
+                if (imbuedTable.Spells.Count > 0) imbuedTable.ImbuedInfo.Mana = 1;
+                else imbuedTable.ImbuedInfo.Mana = 0;
                 imbuedTable.ImbuedInfo.BatteryDots = 0;
 
                 int bonusDots = 0, spellDots = 0;
@@ -267,7 +299,12 @@ namespace MageNPCTracker.Controllers
                         else _context.Remove(imbuedTable.Spells[i]);
                     }
                     spellLevels.Sort();
-                    imbuedTable.ImbuedInfo.SpellLevel = (short)spellLevels.Last();
+                    if (spellLevels.Count > 0) imbuedTable.ImbuedInfo.SpellLevel = (short)spellLevels.Last();
+                    else
+                    {
+                        imbuedTable.ImbuedInfo.SpellLevel = 0;
+                        imbuedTable.ImbuedInfo.Mana = 0;
+                    }
                 }
 
                 for (int i = 0; i < imbuedTable.ItemEnhancement.Count; i++)
@@ -367,7 +404,6 @@ namespace MageNPCTracker.Controllers
             var imbuedTable = await _context.ImbuedTable.FindAsync(id);
             var itemEnhancement = _context.ItemEnhancement.Where(x => x.ImbuedItemId == id).ToList();
 
-            _context.ItemEnhancement.RemoveRange(itemEnhancement);
             _context.ImbuedTable.Remove(imbuedTable);
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");

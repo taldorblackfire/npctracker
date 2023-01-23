@@ -1,4 +1,4 @@
-﻿@model IEnumerable<MageNPCTracker.Models.ImbuedTable>
+﻿@model ImbuedIndexViewModel
 
 @{
     ViewData["Title"] = "Imbued Item List";
@@ -8,6 +8,19 @@
 
 <p><a asp-action="Create">Create New Imbued Item</a></p>
 
+<table id="searchTable" class="table">
+    <thead>
+        <tr class="webgrid-header" style="text-align: center;">
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="webgrid-row-style" style="text-align: center;">
+            <td>@Html.DropDownList("Arcana", (IEnumerable<SelectListItem>)ViewBag.Arcana, "Select Arcana", htmlAttributes: new { @class = "form-control" })</td>
+            <td>@Html.DropDownList("Spell", (IEnumerable<SelectListItem>)ViewBag.SpellList, "Select Spell", htmlAttributes: new { @class = "form-control" })</td>
+        </tr>
+    </tbody>
+</table>
+
 <table class="table webgrid-table" id="ImbuedTable">
     <thead>
         <tr class="webgrid-header" style="text-align: center;">
@@ -15,19 +28,26 @@
             <th>Cost</th>
             <th>Mana</th>
             <th>Mana Battery Dots</th>
-            <th>Spell Level</th>
+            <th>Spells</th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
+        @foreach (var item in Model.Info)
         {
             <tr class="webgrid-row-style" style="text-align: center;">
                 <td>@Html.ActionLink(@item.Name, "Details", new { id = item.Id })</td>
                 <td>@item.Cost</td>
                 <td>@item.Mana</td>
                 <td>@item.BatteryDots</td>
-                <td>@item.SpellLevel</td>
+                @if (item.SpellName != null)
+                {
+                    <td>@item.SpellName</td>
+                }
+                else
+                {
+                    <td>No Spell</td>
+                }
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                     <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
@@ -40,5 +60,57 @@
 @section Scripts{
     <script type="text/javascript">
         var table = $('#ImbuedTable').DataTable();
+
+        $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
+            if ($('#Spell option:selected').text() === "Select Spell" && $('#Arcana option:selected').text() === "Select Arcana") {
+                return true;
+            }
+
+            var arcana = $('#Arcana option:selected').text().trim();
+            var selectedSpell = $('#Spell option:selected').text().trim();
+
+            var spell = data[4];
+            var splitSpells = spell.split(',');
+
+            if (splitSpells.length > 1) {
+                for (var i = 0; i < splitSpells.length; i++) {
+                    if (arcana !== "Select Arcana" && selectedSpell !== "Select Spell") {
+                        if (selectedSpell === splitSpells[i] && splitSpells[i].indexOf(arcana) >= 0) {
+                            return true;
+                        }
+                    }
+                    else if (arcana !== "Select Arcana" && selectedSpell === "Select Spell") {
+                        if (splitSpells[i].indexOf(arcana) >= 0) {
+                            return true;
+                        }
+                    }
+                    else if (selectedSpell === spell) {
+                        return true;
+                    }
+                }
+            }
+            else {
+                if (arcana !== "Select Arcana" && selectedSpell !== "Select Spell") {
+                    if (spell.indexOf(arcana) >= 0 && selectedSpell === spell) {
+                        return true;
+                    }
+                }
+                else if (arcana !== "Select Arcana" && selectedSpell === "Select Spell") {
+                    if (spell.indexOf(arcana) >= 0) {
+                        return true;
+                    }
+                }
+                else if (selectedSpell === spell) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+        });
+
+        $('#Spell, #Arcana').change(function () {
+            table.draw();
+        });
     </script>
 }

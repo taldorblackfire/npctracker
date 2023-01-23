@@ -24,7 +24,7 @@
 <table id="NPCTable" class="table webgrid-table">
     <thead>
         <tr class="webgrid-header" style="text-align: center;">
-            <th>Alias</th>
+            <th>Shadow Name</th>
             <th>Gnosis</th>
             <th>Cabal</th>
             <th>Legacy</th>
@@ -36,64 +36,53 @@
         </tr>
     </thead>
     <tbody>
-        @for (int i = 0; i < Model.NpcInfo.Count; i++)
+        @for (int i = 0; i < Model.MageInfo.Count; i++)
         {
-            string arcana = "";
-            int npcId = Model.NpcInfo[i].Npcid;
-            List<string> arcanaList = Model.MageArcana.Where(x => x.Npcid == npcId).Select(x => x.Arcana.Arcana).ToList();
-            List<int> arcanaLevel = Model.MageArcana.Where(x => x.Npcid == npcId).Select(x => x.Level).ToList();
-            for (int j = 0; j < arcanaList.Count; j++)
-            {
-                arcana = arcana + arcanaList[j].Trim() + " " + arcanaLevel[j] + ", ";
-            }
-
-            arcana = arcana.Trim().TrimEnd(',');
-
             <tr class="webgrid-row-style" style="text-align: center;">
-                @if (Model.NpcInfo[i].Alive)
+                @if (Model.MageInfo[i].Alive)
                 {
-                    <td>@Html.ActionLink(Model.NpcInfo[i].Alias, "Details", new { id = Model.NpcInfo[i].Npcid })</td>
+                    <td>@Html.ActionLink(Model.MageInfo[i].ShadowName, "Details", new { id = Model.MageInfo[i].NPCId })</td>
                 }
                 else
                 {
-                    <td>@Html.ActionLink(Model.NpcInfo[i].Alias + " (Dead)", "Details", new { id = Model.NpcInfo[i].Npcid })</td>
+                    <td>@Html.ActionLink(Model.MageInfo[i].ShadowName + " (Dead)", "Details", new { id = Model.MageInfo[i].NPCId })</td>
                 }
-                <td>@Model.NpcInfo[i].SupernaturalTrait.ToString()</td>
-                @if (Model.MageInfo[i].CabalNavigation != null)
+                <td>@Model.MageInfo[i].Gnosis.ToString()</td>
+                @if (Model.MageInfo[i].CabalId != null)
                 {
-                    <td>@Html.ActionLink(Model.MageInfo[i].CabalNavigation.CabalName, "Details", "Cabal", new { id = Model.MageInfo[i].Cabal })</td>
-                }
-                else
-                {
-                    <td></td>
-                }
-                @if (Model.MageInfo[i].LegacyNavigation != null)
-                {
-                    <td><a href="https://dbeditor.azurewebsites.net/Legacy/Details/@Model.MageInfo[i].LegacyNavigation.LegacyId">@Model.MageInfo[i].LegacyNavigation.LegacyName</a></td>
+                    <td>@Html.ActionLink(Model.MageInfo[i].Cabal, "Details", "Cabal", new { id = Model.MageInfo[i].CabalId })</td>
                 }
                 else
                 {
                     <td></td>
                 }
-                <td>@Model.MageInfo[i].OrderNavigation.OrderName</td>
-                @if (Model.MageInfo[i].OrderStatusNavigation != null)
+                @if (Model.MageInfo[i].LegacyId != null)
                 {
-                    <td><a href="https://dbeditor.azurewebsites.net/Titles/DetailsCaucus/@Model.MageInfo[i].OrderStatusNavigation.MageCaucusId">@Model.MageInfo[i].OrderStatusNavigation.Title</a></td>
+                    <td><a href="https://dbeditor.azurewebsites.net/Legacy/Details/@Model.MageInfo[i].LegacyId">@Model.MageInfo[i].Legacy</a></td>
                 }
                 else
                 {
                     <td></td>
                 }
-                @if (Model.MageInfo[i].ConsiliumStatusNavigation != null)
+                <td>@Model.MageInfo[i].Order</td>
+                @if (Model.MageInfo[i].OrderStatusId != null)
                 {
-                    <td><a href="https://dbeditor.azurewebsites.net/Titles/DetailsConsilium/@Model.MageInfo[i].ConsiliumStatusNavigation.ConsiliumTitleId">@Model.MageInfo[i].ConsiliumStatusNavigation.Title</a></td>
+                    <td><a href="https://dbeditor.azurewebsites.net/Titles/DetailsCaucus/@Model.MageInfo[i].OrderStatusId">@Model.MageInfo[i].OrderTitle</a></td>
                 }
                 else
                 {
                     <td></td>
                 }
-                <td>@arcana</td>
-                <td>@Model.NpcInfo[i].Notes</td>
+                @if (Model.MageInfo[i].ConsiliumStatusId != null)
+                {
+                    <td><a href="https://dbeditor.azurewebsites.net/Titles/DetailsConsilium/@Model.MageInfo[i].ConsiliumStatusId">@Model.MageInfo[i].ConsiliumTitle</a></td>
+                }
+                else
+                {
+                    <td></td>
+                }
+                <td>@Model.MageInfo[i].Arcana</td>
+                <td>@Model.MageInfo[i].Notes</td>
             </tr>
         }
     </tbody>

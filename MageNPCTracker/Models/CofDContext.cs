@@ -41,18 +41,27 @@ namespace MageNPCTracker.Models
         public virtual DbSet<Skills> Skills { get; set; }
         public virtual DbSet<SpellArcanaTable> SpellArcanaTable { get; set; }
         public virtual DbSet<SpellTable> SpellTable { get; set; }
+        public DbQuery<NPCView> NPCView { get; set; }
+        public DbQuery<ImbuedView> ImbuedView { get; set; }
+        public DbQuery<ArtifactView> ArtifactView { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Server=mystariaserver.database.windows.net;Database=Mystaria;user id=mystariaadmin;password=mystaria!1;");
+                optionsBuilder.UseSqlServer("Server=217.180.206.76,49172;Database=CofD;user id=wodadmin;password=serundia!1;");
             }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasAnnotation("ProductVersion", "2.2.6-servicing-10079");
+
+            modelBuilder.Query<NPCView>().ToView("NPCView");
+
+            modelBuilder.Query<ArtifactView>().ToView("ArtifactView");
+
+            modelBuilder.Query<ImbuedView>().ToView("ImbuedView");
 
             modelBuilder.Entity<ArcanaTable>(entity =>
             {
@@ -74,11 +83,13 @@ namespace MageNPCTracker.Models
                 entity.HasOne(d => d.AtrtifactTable)
                 .WithMany(p => p.ArtifactAttainment)
                 .HasForeignKey(d => d.ArtifactId)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_ArtifactAttainment_Artifact_Table");
 
                 entity.HasOne(d => d.AttainmentTable)
                 .WithMany(p => p.ArtifactAttainment)
                 .HasForeignKey(d => d.AttainmentId)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_ArtifactAttainment_Attainment_Table");
             });
 
@@ -148,11 +159,13 @@ namespace MageNPCTracker.Models
                 entity.HasOne(d => d.ImbuedTable)
                       .WithMany(p => p.ImbuedItemSpell)
                       .HasForeignKey(d => d.ImbuedItemId)
+                      .OnDelete(DeleteBehavior.Cascade)
                       .HasConstraintName("FK_ImbuedItemSpell_Imbued_Table");
 
                 entity.HasOne(d => d.SpellTable)
                       .WithMany(p => p.ImbuedItemSpell)
                       .HasForeignKey(d => d.SpellId)
+                      .OnDelete(DeleteBehavior.Cascade)
                       .HasConstraintName("FK_ImbuedItemSpell_Spell_Table");
             });
 
@@ -165,21 +178,25 @@ namespace MageNPCTracker.Models
                 entity.HasOne(d => d.EnhancedItem)
                     .WithMany(p => p.ItemEnhancement)
                     .HasForeignKey(d => d.EnhancedItemId)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_ItemEnhancement_EnhancedTable");
 
                 entity.HasOne(d => d.ImbuedItem)
                     .WithMany(p => p.ItemEnhancement)
                     .HasForeignKey(d => d.ImbuedItemId)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_ItemEnhancement_Imbued_Table");
 
                 entity.HasOne(d => d.Spell)
                     .WithMany(p => p.ItemEnhancement)
                     .HasForeignKey(d => d.SpellId)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_ItemEnhancement_Spell_Table");
 
                 entity.HasOne(d => d.RefEnhancement)
                     .WithMany(p => p.ItemEnhancement)
                     .HasForeignKey(d => d.EnhancementId)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_ItemEnhancement_RefEnhancement");
             });
 
@@ -194,13 +211,12 @@ namespace MageNPCTracker.Models
                 entity.HasOne(d => d.Mentor)
                     .WithMany(p => p.MageApprenticeTableMentor)
                     .HasForeignKey(d => d.MentorId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_MageApprenticeTable_NPCTable");
 
                 entity.HasOne(d => d.Npc)
                     .WithMany(p => p.MageApprenticeTableNpc)
                     .HasForeignKey(d => d.Npcid)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_MageApprenticeTable_NPCTable1");
             });
 
@@ -211,6 +227,7 @@ namespace MageNPCTracker.Models
                 entity.HasOne(d => d.Game)
                     .WithMany(p => p.MageCabal)
                     .HasForeignKey(d => d.GameId)
+                    .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("FK_MageCabal_NPCGame");
             });
 
@@ -227,7 +244,7 @@ namespace MageNPCTracker.Models
                 entity.HasOne(d => d.MageOrderNavigation)
                     .WithMany(p => p.MageCaucusInfo)
                     .HasForeignKey(d => d.MageOrder)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_MageCaucusInfo_MageOrder");
             });
 
@@ -253,13 +270,13 @@ namespace MageNPCTracker.Models
                 entity.HasOne(d => d.Arcana)
                     .WithMany(p => p.MageNpcarcana)
                     .HasForeignKey(d => d.ArcanaId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_MageNPCArcana_Arcana_Table");
 
                 entity.HasOne(d => d.Npc)
                     .WithMany(p => p.MageNpcarcana)
                     .HasForeignKey(d => d.Npcid)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_MageNPCArcana_NPCTable");
             });
 
@@ -275,35 +292,46 @@ namespace MageNPCTracker.Models
 
                 entity.Property(e => e.SignatureNimbus).IsRequired();
 
+                entity.HasOne(d => d.Npctable)
+                    .WithMany(p => p.MageNpctable)
+                    .HasForeignKey(d => d.Npcid)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_MageNPCTable_NPCTable");
+
                 entity.HasOne(d => d.ConsiliumStatusNavigation)
                     .WithMany(p => p.MageNpctable)
                     .HasForeignKey(d => d.ConsiliumStatus)
+                    .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("FK_MageNPCTable_MageConsiliumTitles");
 
                 entity.HasOne(d => d.CabalNavigation)
                     .WithMany(p => p.MageNpctable)
                     .HasForeignKey(d => d.Cabal)
+                    .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("FK_MageNPCTable_MageCabal");
 
                 entity.HasOne(d => d.LegacyNavigation)
                     .WithMany(p => p.MageNpctable)
                     .HasForeignKey(d => d.Legacy)
+                    .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("FK_MageNPCTable_RefLegacy");
 
                 entity.HasOne(d => d.OrderNavigation)
                     .WithMany(p => p.MageNpctable)
                     .HasForeignKey(d => d.Order)
+                    .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("FK_MageNPCTable_MageOrder");
 
                 entity.HasOne(d => d.OrderStatusNavigation)
                     .WithMany(p => p.MageNpctable)
                     .HasForeignKey(d => d.OrderStatus)
+                    .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("FK_MageNPCTable_MageCaucusInfo");
 
                 entity.HasOne(d => d.PathNavigation)
                     .WithMany(p => p.MageNpctable)
                     .HasForeignKey(d => d.Path)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("FK_MageNPCTable_MagePath");
             });
 
@@ -342,13 +370,13 @@ namespace MageNPCTracker.Models
                 entity.HasOne(d => d.Artifact)
                     .WithMany(p => p.Npcartifact)
                     .HasForeignKey(d => d.ArtifactId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_NPCArtifact_Artifact_Table");
 
                 entity.HasOne(d => d.Npc)
                     .WithMany(p => p.Npcartifact)
                     .HasForeignKey(d => d.Npcid)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_NPCArtifact_NPCTable");
             });
 
@@ -373,13 +401,13 @@ namespace MageNPCTracker.Models
                 entity.HasOne(d => d.Imbued)
                     .WithMany(p => p.Npcimbued)
                     .HasForeignKey(d => d.ImbuedId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_NPCImbued_Imbued_Table");
 
                 entity.HasOne(d => d.Npc)
                     .WithMany(p => p.Npcimbued)
                     .HasForeignKey(d => d.Npcid)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_NPCImbued_NPCTable");
             });
 
@@ -421,6 +449,7 @@ namespace MageNPCTracker.Models
                 entity.HasOne(d => d.Order)
                     .WithMany(p => p.RefLegacyOrder)
                     .HasForeignKey(d => d.OrderId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_RefLegacy_MageOrder");
 
                 entity.HasOne(d => d.Path)
@@ -499,7 +528,7 @@ namespace MageNPCTracker.Models
                 entity.HasOne(d => d.SpellTable)
                     .WithMany(p => p.SpellArcanaTable)
                     .HasForeignKey(d => d.SpellTableId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_Spell_Arcana_Table_Spell_Table");
             });
 

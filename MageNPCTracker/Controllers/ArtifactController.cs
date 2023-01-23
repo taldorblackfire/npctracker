@@ -11,18 +11,24 @@ namespace MageNPCTracker.Controllers
     public class ArtifactController : Controller
     {
         public CofDContext _context = new CofDContext();
+        private readonly List<ArtifactView> view = new List<ArtifactView>();
+
+        public ArtifactController()
+        {
+            view = _context.ArtifactView.ToList();
+        }
 
         public ActionResult AddAttainment()
         {
-            ViewBag.ArtifactAttainments = new SelectList(_context.AttainmentTable.Where(x => x.ItemUsable && !x.attainment_name.Contains("Shielding")).OrderBy(x => x.attainment_name), "Id", "attainment_name");
+            ViewBag.ArtifactAttainments = new SelectList(_context.AttainmentTable.Where(x => x.ItemUsable).OrderBy(x => x.attainment_name), "Id", "attainment_name");
 
             return PartialView("_ArtifactAttainment", new ArtifactAttainment());
         }
 
         // GET: Artifact
-        public async Task<IActionResult> Index()
+        public ActionResult Index()
         {
-            return View(await _context.ArtifactTable.ToListAsync());
+            return View(view);
         }
 
         // GET: Artifact/Details/5
@@ -67,7 +73,9 @@ namespace MageNPCTracker.Controllers
                 if (artifactTable.ArtifactInfo.YantraBonus) cost++;
 
                 cost += artifactTable.ArtifactInfo.Reach;
-                cost += artifactTable.Attainments.Count;
+
+                for(int i = 0; i < artifactTable.Attainments.Count; i++)
+                    if (artifactTable.Attainments[i].AttainmentId != 0) cost += 1;
 
                 if (cost < 3) artifactTable.ArtifactInfo.Cost = 3;
                 else artifactTable.ArtifactInfo.Cost = (short)cost;
@@ -113,7 +121,7 @@ namespace MageNPCTracker.Controllers
 
             vm.ArtifactInfo = artifactTable;
             vm.Attainments = _context.ArtifactAttainment.Where(x => x.ArtifactId == id).Include(x => x.AttainmentTable).ToList();
-            ViewBag.ArtifactAttainments = new SelectList(_context.AttainmentTable.Where(x => x.ItemUsable && !x.attainment_name.Contains("Shielding")).OrderBy(x => x.attainment_name), "Id", "attainment_name");
+            ViewBag.ArtifactAttainments = new SelectList(_context.AttainmentTable.Where(x => x.ItemUsable).OrderBy(x => x.attainment_name), "Id", "attainment_name");
 
             return View(vm);
         }
@@ -176,7 +184,7 @@ namespace MageNPCTracker.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewBag.ArtifactAttainments = new SelectList(_context.AttainmentTable.Where(x => x.ItemUsable && !x.attainment_name.Contains("Shielding")).OrderBy(x => x.attainment_name), "Id", "attainment_name");
+            ViewBag.ArtifactAttainments = new SelectList(_context.AttainmentTable.Where(x => x.ItemUsable).OrderBy(x => x.attainment_name), "Id", "attainment_name");
             return View(artifactTable);
         }
 

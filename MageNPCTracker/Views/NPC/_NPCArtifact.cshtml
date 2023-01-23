@@ -4,6 +4,10 @@
 @using (Html.BeginCollectionItem("ArtifactList"))
 {
     @Html.HiddenFor(model => model.NpcartifactId)
+    @Html.HiddenFor(model => model.Npcid)
+    @Html.HiddenFor(model => model.Npc)
+    @Html.HiddenFor(model => model.Artifact)
+
     <div id="itemRow">
         <div id="artifactRow" class="form-group">
             <label class="control-label col-md-4" style="display: inline-block; text-align: right;">Artifact</label>
